@@ -6,7 +6,7 @@ export default (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "POST") {
     const data = req.body;
     // Lógica para crear un recurso (ej. guardar en una base de datos)
-    res.status(201).json({ message: "Recurso creado", data });
+    res.status(201).json({ message: "Recurso creado Verce", data });
   } else {
     res.status(405).json({ message: "Método no permitido" });
   }
