@@ -1,22 +1,31 @@
-name: Notify Slack
+name: Notify Slack on PR State Change
 
 on:
   pull_request:
-    types: [closed]
+    types: [closed, opened, reopened, edited]
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Slack notification
+      - name: Send Slack notification on PR state change
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-            STATUS="merged"
-          else
-            STATUS="declined"
+          if [ "${{ github.event.pull_request.state }}" = "closed" ]; then
+            if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+              STATUS="merged"
+            else
+              STATUS="declined"
+            fi
+          elif [ "${{ github.event.pull_request.state }}" = "open" ]; then
+            if [ "${{ github.event.action }}" = "opened" ]; then
+              STATUS="opened"
+            elif [ "${{ github.event.action }}" = "reopened" ]; then
+              STATUS="reopened"
+            elif [ "${{ github.event.action }}" = "edited" ]; then
+              STATUS="edited"
+            fi
           fi
 
           curl -X POST -H 'Content-type: application/json' --data '{
