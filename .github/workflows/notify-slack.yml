@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Enviar notificación a Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           STATUS=""
 
@@ -18,7 +20,12 @@ jobs:
             STATUS="declined"
           fi
 
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Tu pull request (#${{ github.event.pull_request.number }}) ha sido \""${STATUS}"\".",
+          PAYLOAD=$(cat <<EOF
+          {
+            "text": "Tu pull request (#${{ github.event.pull_request.number }}) ha sido \"$STATUS\".",
             "channel": "#general"
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+          }
+          EOF
+          )
+
+          curl -X POST -H 'Content-type: application/json' --data "$PAYLOAD" $SLACK_WEBHOOK_URL
