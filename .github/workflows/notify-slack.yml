@@ -1,0 +1,25 @@
+name: Notify Slack
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            STATUS="merged"
+          else
+            STATUS="declined"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "Your pull request (#${{ github.event.pull_request.number }}) has been $STATUS.",
+            "channel": "@${{ github.event.pull_request.user.login }}"
+          }' $SLACK_WEBHOOK_URL
