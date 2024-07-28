@@ -20,6 +20,6 @@ jobs:
           fi
 
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Your pull request (#${{ github.event.pull_request.number }}) has been $STATUS.",
+            "text": "Your pull request (#${{ github.event.pull_request.number }}) has been '"$STATUS"'.",
             "channel": "@${{ github.event.pull_request.user.login }}"
           }' $SLACK_WEBHOOK_URL
