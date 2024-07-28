@@ -12,8 +12,25 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          
+          STATUS=""
+
+          if [ "${{ github.event.pull_request.state }}" = "closed" ]; then
+            if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+              STATUS="merged"
+            else
+              STATUS="declined"
+            fi
+          elif [ "${{ github.event.pull_request.state }}" = "open" ]; then
+            if [ "${{ github.event.action }}" = "opened" ]; then
+              STATUS="opened"
+            elif [ "${{ github.event.action }}" = "reopened" ]; then
+              STATUS="reopened"
+            elif [ "${{ github.event.action }}" = "edited" ]; then
+              STATUS="edited"
+            fi
+          fi
+
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Your pull request (#${{ github.event.pull_request.number }}) has been '"eeee"'.",
+            "text": "Your pull request (#${{ github.event.pull_request.number }}) has been '"${STATUS}"'.",
             "channel": "@${{ github.event.pull_request.user.login }}"
           }' $SLACK_WEBHOOK_URL
