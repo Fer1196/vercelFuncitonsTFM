@@ -1,22 +1,24 @@
-STATUS=""
+name: Notificación a Slack al cerrar un Pull Request
 
-if [ "${{ github.event.pull_request.state }}" = "closed" ]; then
-  if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-    STATUS="merged"
-  else
-    STATUS="declined"
-  fi
-elif [ "${{ github.event.pull_request.state }}" = "open" ]; then
-  if [ "${{ github.event.action }}" = "opened" ]; then
-    STATUS="opened"
-  elif [ "${{ github.event.action }}" = "reopened" ]; then
-    STATUS="reopened"
-  elif [ "${{ github.event.action }}" = "edited" ]; then
-    STATUS="edited"
-  fi
-fi
+on:
+  pull_request:
+    types: [closed]
 
-curl -X POST -H 'Content-type: application/json' --data '{
-  "text": "Tu pull request (#${{ github.event.pull_request.number }}) ha sido '"${STATUS}"'.",
-  "channel": "#tu-canal-deseado"
-}' ${{ secrets.SLACK_WEBHOOK_URL }}
+jobs:
+  notify_slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar notificación a Slack
+        run: |
+          STATUS=""
+
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            STATUS="merged"
+          else
+            STATUS="declined"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "Tu pull request (#${{ github.event.pull_request.number }}) ha sido \""${STATUS}"\".",
+            "channel": "#general"
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
