@@ -3,7 +3,7 @@ name: my_workflow
 on:
   push:
     branches:
-      - main  # O cualquier rama específica que desees monitorear
+      - UAT  # O cualquier rama específica que desees monitorear
   pull_request:
     types: [opened, synchronize]
   issues:
