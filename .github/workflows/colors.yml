@@ -32,7 +32,7 @@ jobs:
               "attachments": [
                 {
                   "color": "#FFA500",
-                  "text": "Detalles del *Pull Request*:\n*Título:* ${{ github.event.pull_request.title }}\n*Autor:* ${{ github.event.pull_request.user.login }}\n*Enlace:* ${{ github.event.pull_request.html_url }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Sender:* ${{ github.event.sender.login }}"
+                  "text": "Detalles del *Pull Request*:\n*Título:* ${{ github.event.issue.title }}\n*Autor:* ${{ github.event.sender.login }}\n*Body:* ${{ github.event.issue.body }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Sender:* ${{ github.event.sender.login }}"
                 }
               ]
             }
