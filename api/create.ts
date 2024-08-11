@@ -8,6 +8,6 @@ export default (req: VercelRequest, res: VercelResponse) => {
     // Lógica para crear un recurso (ej. guardar en una base de datos)
     res.status(201).json({ message: "Recurso creado Vercel testing GA", data });
   } else {
-    res.status(405).json({ message: "Método no permitido" });
+    res.status(405).json({ message: "Método no permitido j" });
   }
 };
