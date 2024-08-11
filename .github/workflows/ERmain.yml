@@ -1,0 +1,82 @@
+name: pull_request_notification
+
+on:
+  pull_request: 
+    types: [opened, edited, closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Reviewers
+        id: get_reviewers
+        run: |
+          reviewers=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "${{ github.event.pull_request.url }}/requested_reviewers" | jq -r '.users[].login')
+          echo "reviewers=$reviewers" >> $GITHUB_ENV
+
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: C07G7NCBVQW
+          payload: |
+            {
+              "channel": "C07G7NCBVQW",
+              "text": "📢 Nueva actualización de Pull Request",
+              "attachments": [
+                {
+                  "color": "#36a64f",
+                  "pretext": "Un Pull Request ha sido actualizado:",
+                  "fields": [
+                    {
+                      "title": "Título",
+                      "value": "${{ github.event.pull_request.title }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Autor",
+                      "value": "${{ github.event.pull_request.user.login }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Estado",
+                      "value": "${{ github.event.pull_request.state }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Número",
+                      "value": "${{ github.event.pull_request.number }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Reviewers",
+                      "value": "${{ env.reviewers }}",
+                      "short": true
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": "button",
+                      "text": "Ver Pull Request",
+                      "url": "${{ github.event.pull_request.html_url }}",
+                      "style": "primary"
+                    },
+                    {
+                      "type": "button",
+                      "text": "Revisar Cambios",
+                      "url": "${{ github.event.pull_request.html_url }}/files",
+                      "style": "danger"
+                    }
+                  ],
+                  "footer": "GitHub Actions",
+                  "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+                  "ts": "{{ github.event.pull_request.updated_at }}"
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
