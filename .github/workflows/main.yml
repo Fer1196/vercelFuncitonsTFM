@@ -13,7 +13,7 @@ jobs:
       id: slack
       uses: slackapi/slack-github-action@v1.26.0
       with:
-        channel-id: 'SLACK_CHANNEL_ID' # ID of Slack Channel you want to post to
+        channel-id: 'C07G7NCBVQW' # ID of Slack Channel you want to post to
         payload: |
           {
             "blocks": [
