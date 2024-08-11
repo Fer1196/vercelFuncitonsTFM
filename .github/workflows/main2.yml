@@ -12,9 +12,10 @@ jobs:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v1.24.0
         with:
+          channel-id: 'C07G7NCBVQW'
           payload: |
             {
-              "channel-id": "C07G7NCBVQW",
+              
               "text": "📢 Atención: Se ha creado un nuevo Pull Request."
             }
         env:
