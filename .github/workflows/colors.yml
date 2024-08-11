@@ -1,13 +1,17 @@
 name: my_workflow
 
 on:
-  push:
-    branches:
-      - main  # O cualquier rama específica que desees monitorear
+  workflow_dispatch:
   pull_request:
-    types: [opened, synchronize]
-  issues:
-    types: [opened, edited]
+    types: [opened, synchronize]  # Activar en la creación y sincronización del pull request
+
+env:
+  PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }} 
+  PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+  PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
+  PULL_REQUEST_EVENT_NAME: ${{ github.event_name }}
+  PULL_REQUEST_LOGS_URL: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
+  PULL_REQUEST_COMMIT_URL: ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}
 
 jobs:
   checks:
@@ -26,11 +30,11 @@ jobs:
           payload: |
             {
               "channel": "C07G7NCBVQW",
-              "text": "📢 Atención: Se ha iniciado una nueva construcción.",
+              "text": "📢 Atención: Se ha creado o sincronizado un Pull Request.",
               "attachments": [
                 {
                   "color": "#FFA500",
-                  "text": "Detalles del *Pull Request*:\n*Título:* ${{ github.event.pull_request.title }}\n*Autor:* ${{ github.event.pull_request.user.login }}\n*Enlace:* ${{ github.event.pull_request.html_url }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Logs:* ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                  "text": "Detalles del Pull Request:\n*Título:* ${{ env.PULL_REQUEST_TITLE }}\n*Autor:* ${{ env.PULL_REQUEST_AUTHOR }}\n*Enlace:* ${{ env.PULL_REQUEST_URL }}\n*Commit:* ${{ env.PULL_REQUEST_COMMIT_URL }}\n*Logs:* ${{ env.PULL_REQUEST_LOGS_URL }}"
                 }
               ]
             }
@@ -45,11 +49,11 @@ jobs:
           payload: |
             {
               "channel": "C07G7NCBVQW",
-              "text": "📢 Resultado de la construcción.",
+              "text": "📢 Resultado de la construcción del Pull Request.",
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || job.status == 'failure' && '#ff0000' || '#FFA500' }}",
-                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ env.PULL_REQUEST_LOGS_URL }}"
                 }
               ]
             }
