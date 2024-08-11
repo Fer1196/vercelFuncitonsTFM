@@ -1,23 +1,19 @@
 name: Notify Slack on PR
-
-on:
+'on':
   pull_request:
-    types: [opened, edited, reopened]  # Puedes ajustar los tipos de eventos según tus necesidades
-
+    types:
+      - opened
+      - edited
+      - reopened
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v1.24.0
         with:
-          payload: |
-            {
-              "channel": "#backend",
-              "text": "📢 Atención: Se ha creado una nueva Pull Request\n*Título:* ${{ github.event.pull_request.title }}\n*Autor:* ${{ github.event.pull_request.user.login }}\n*Descripción:* ${{ github.event.pull_request.body }}\n*Enlace:* ${{ github.event.pull_request.html_url }}\n*Rama base:* ${{ github.event.pull_request.base.ref }}\n*Rama de comparación:* ${{ github.event.pull_request.head.ref }}"
+          payload: "{\n  \"channel\": \"#backend\",\n  \"text\": \"\U0001F4E2 Atención: Se ha creado una nueva Pull Request\\n*Título:* ${{ github.event.pull_request.title }}\\n*Autor:* ${{ github.event.pull_request.user.login }}\\n*Descripción:* ${{ github.event.pull_request.body }}\\n*Enlace:* ${{ github.event.pull_request.html_url }}\\n*Rama base:* ${{ github.event.pull_request.base.ref }}\\n*Rama de comparación:* ${{ github.event.pull_request.head.ref }}\"\n"
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
