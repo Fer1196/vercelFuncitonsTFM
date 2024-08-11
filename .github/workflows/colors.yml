@@ -38,5 +38,5 @@ jobs:
           PULL_REQUEST_JOB_STATUS: ${{ job.status }}
           PULL_REQUEST_JOB_STATUS_COLOR: ${{ job.status == 'success' && "#FFA500" || job.status == 'failure' && "#FFA500" || "#FFA500" }}
         with:
-          channel-id: ${{ vars.SLACK_CHANNEL }}
+          channel-id: C07G7NCBVQW
           payload-file-path: .github/slack/ci_slack_message.json
