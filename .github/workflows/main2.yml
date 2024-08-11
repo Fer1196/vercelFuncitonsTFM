@@ -1,19 +1,18 @@
-name: Notify Slack 2
+name: slack-notification
 
-on:
-  pull_request:
-    types: [opened, edited, reopened]  # Puedes ajustar los tipos de eventos según tus necesidades
+on: [push, pull_request, issues]
 
 jobs:
-  new_push_job:
-    runs-on: ubuntu-latest
-    name: New push to repo
+  slack-notifications:
+    runs-on: ubuntu-20.04
+    name: Sends a message to Slack when a push, a pull request or an issue is made
     steps:
-    - name: Send GitHub trigger payload to Slack Workflow Builder
-      id: slack
-      uses: slackapi/slack-github-action@v1.26.0
-      with:
-        channel-id: 'C07G7NCBVQW' # ID of Slack Channel you want to post to
-        payload: "{\"text\": \"posting from a github action\"}"
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - name: Send message to Slack API
+        uses: archive/github-actions-slack@v2.0.0
+        id: notify
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-channel: CPPUV5KU0
+          slack-text: Hello! Event "${{ github.event_name }}" in "${{ github.repository }}" 🤓
+      - name: Result from "Send Message"
+        run: echo "The result was ${{ steps.notify.outputs.slack-result }}"
