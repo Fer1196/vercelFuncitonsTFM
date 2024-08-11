@@ -3,7 +3,7 @@ name: my_workflow
 on:
   push:
     branches:
-      - main
+      - main  # O cualquier rama específica que desees monitorear
   pull_request:
     types: [opened, synchronize]
   issues:
@@ -30,58 +30,7 @@ jobs:
               "attachments": [
                 {
                   "color": "#FFA500",
-                  "blocks": [
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Pull Request:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Status:*\n`running`"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Author:*\n`${{ github.event.pull_request.user.login }}`"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Event:*\n`${{ github.event_name }}`"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "divider"
-                    },
-                    {
-                      "type": "actions",
-                      "elements": [
-                        {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "Logs"
-                          },
-                          "url": "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
-                        },
-                        {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "Commit"
-                          },
-                          "url": "${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}"
-                        }
-                      ]
-                    }
-                  ]
+                  "text": "Detalles del *Pull Request*:\n*Título:* ${{ github.event.pull_request.title }}\n*Autor:* ${{ github.event.pull_request.user.login }}\n*Enlace:* ${{ github.event.pull_request.html_url }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Logs:* ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
                 }
               ]
             }
@@ -100,58 +49,7 @@ jobs:
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || job.status == 'failure' && '#ff0000' || '#FFA500' }}",
-                  "blocks": [
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Pull Request:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Status:*\n`${{ job.status }}`"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Author:*\n`${{ github.event.pull_request.user.login }}`"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Event:*\n`${{ github.event_name }}`"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "divider"
-                    },
-                    {
-                      "type": "actions",
-                      "elements": [
-                        {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "Logs"
-                          },
-                          "url": "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
-                        },
-                        {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "Commit"
-                          },
-                          "url": "${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}"
-                        }
-                      ]
-                    }
-                  ]
+                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
                 }
               ]
             }
