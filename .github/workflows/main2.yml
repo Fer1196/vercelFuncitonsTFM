@@ -1,0 +1,21 @@
+name: Notify Slack 2
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]  # Puedes ajustar los tipos de eventos según tus necesidades
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "channel": "#backend",
+              "text": "📢 Atención: Se ha creado un nuevo Pull Request."
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
