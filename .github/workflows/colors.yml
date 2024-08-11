@@ -5,6 +5,8 @@ on:
     branches:
       - UAT  # O cualquier rama específica que desees monitorear
   pull_request:
+    branches:
+      - UAT
     types: [opened, synchronize]
   issues:
     types: [opened, edited]
