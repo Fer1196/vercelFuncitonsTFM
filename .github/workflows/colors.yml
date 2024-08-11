@@ -1,17 +1,13 @@
 name: my_workflow
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
   pull_request:
-    types: [opened, synchronize]  # Activar en la creación y sincronización del pull request
-
-env:
-  PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }} 
-  PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
-  PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
-  PULL_REQUEST_EVENT_NAME: ${{ github.event_name }}
-  PULL_REQUEST_LOGS_URL: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
-  PULL_REQUEST_COMMIT_URL: ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}
+    types: [opened, synchronize]
+  issues:
+    types: [opened, edited]
 
 jobs:
   checks:
@@ -30,11 +26,62 @@ jobs:
           payload: |
             {
               "channel": "C07G7NCBVQW",
-              "text": "📢 Atención: Se ha creado o sincronizado un Pull Request.",
+              "text": "📢 Atención: Se ha iniciado una nueva construcción.",
               "attachments": [
                 {
                   "color": "#FFA500",
-                  "text": "Detalles del Pull Request:\n*Título:* ${{ env.PULL_REQUEST_TITLE }}\n*Autor:* ${{ env.PULL_REQUEST_AUTHOR }}\n*Enlace:* ${{ env.PULL_REQUEST_URL }}\n*Commit:* ${{ env.PULL_REQUEST_COMMIT_URL }}\n*Logs:* ${{ env.PULL_REQUEST_LOGS_URL }}"
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Pull Request:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Status:*\n`running`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Author:*\n`${{ github.event.pull_request.user.login }}`"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Event:*\n`${{ github.event_name }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "Logs"
+                          },
+                          "url": "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                        },
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "Commit"
+                          },
+                          "url": "${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -49,11 +96,62 @@ jobs:
           payload: |
             {
               "channel": "C07G7NCBVQW",
-              "text": "📢 Resultado de la construcción del Pull Request.",
+              "text": "📢 Resultado de la construcción.",
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || job.status == 'failure' && '#ff0000' || '#FFA500' }}",
-                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ PULL_REQUEST_TITLE }}"
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Pull Request:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Status:*\n`${{ job.status }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Author:*\n`${{ github.event.pull_request.user.login }}`"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Event:*\n`${{ github.event_name }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "Logs"
+                          },
+                          "url": "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                        },
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "Commit"
+                          },
+                          "url": "${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
