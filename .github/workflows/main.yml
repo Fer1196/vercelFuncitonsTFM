@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: "{\n  \"channel\": \"#backend\",\n  \"text\": \"\U0001F4E2 Atención: Se ha creado una nueva Pull Request\\n*Título:* ${{ github.event.pull_request.title }}\\n*Autor:* ${{ github.event.pull_request.user.login }}\\n*Descripción:* ${{ github.event.pull_request.body }}\\n*Enlace:* ${{ github.event.pull_request.html_url }}\\n*Rama base:* ${{ github.event.pull_request.base.ref }}\\n*Rama de comparación:* ${{ github.event.pull_request.head.ref }}\"\n"
         env:
