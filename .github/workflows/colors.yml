@@ -53,7 +53,7 @@ jobs:
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || job.status == 'failure' && '#ff0000' || '#FFA500' }}",
-                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ env.PULL_REQUEST_LOGS_URL }}"
+                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ PULL_REQUEST_TITLE }}"
                 }
               ]
             }
