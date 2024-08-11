@@ -1,48 +1,23 @@
-
+name: Notify Slack on PR
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, edited, reopened]  # Puedes ajustar los tipos de eventos según tus necesidades
 
 jobs:
-  new_push_job:
+  notify:
     runs-on: ubuntu-latest
-    name: New push to repo
+
     steps:
-    - name: Send GitHub trigger payload to Slack Workflow Builder
-      id: slack
-      uses: slackapi/slack-github-action@v1.26.0
-      with:
-        channel-id: 'C07G7NCBVQW' # ID of Slack Channel you want to post to
-        payload: |
-          {
-            "blocks": [
-              { "type": "divider" },
-              {
-                "type": "image",
-                "title": {
-                  "type": "plain_text",
-                  "text": "Slack Slack Slack",
-                  "emoji": true
-                },
-                "image_url": "https://media.makeameme.org/created/a-slack-this.jpg",
-                "alt_text": "marg"
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "${{ github.sha }}"
-                    },
-                    "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  }
-                ]
-              }
-            ],
-            "channel-id": "NEW_TARGET_CHANNEL_ID"
-          }
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "channel": "#backend",
+              "text": "📢 Atención: Se ha creado una nueva Pull Request\n*Título:* ${{ github.event.pull_request.title }}\n*Autor:* ${{ github.event.pull_request.user.login }}\n*Descripción:* ${{ github.event.pull_request.body }}\n*Enlace:* ${{ github.event.pull_request.html_url }}\n*Rama base:* ${{ github.event.pull_request.base.ref }}\n*Rama de comparación:* ${{ github.event.pull_request.head.ref }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
