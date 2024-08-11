@@ -1,14 +1,13 @@
 name: my_workflow
 
-on: [push, pull_request, issues]
-
-env:
-  PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }} 
-  PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
-  PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
-  PULL_REQUEST_EVENT_NAME: ${{ github.event_name }}
-  PULL_REQUEST_LOGS_URL: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
-  PULL_REQUEST_COMMIT_URL: ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}
+on:
+  push:
+    branches:
+      - main  # O cualquier rama específica que desees monitorear
+  pull_request:
+    types: [opened, synchronize]
+  issues:
+    types: [opened, edited]
 
 jobs:
   checks:
@@ -18,25 +17,41 @@ jobs:
       - name: Setup repo
         uses: actions/checkout@v3
         with:
-          # Required to detect modified files
-          # between master and PR branches.
           fetch-depth: 0
 
       - name: Slack message on build start
         uses: slackapi/slack-github-action@v1.24.0
-        env:
-          PULL_REQUEST_JOB_STATUS: running
-          PULL_REQUEST_JOB_STATUS_COLOR: '#FFA500'
         with:
           channel-id: C07G7NCBVQW
-          payload-file-path: .github/slack/ci_slack_message.json
+          payload: |
+            {
+              "channel": "C07G7NCBVQW",
+              "text": "📢 Atención: Se ha iniciado una nueva construcción.",
+              "attachments": [
+                {
+                  "color": "#FFA500",
+                  "text": "Detalles del *Pull Request*:\n*Título:* ${{ github.event.pull_request.title }}\n*Autor:* ${{ github.event.pull_request.user.login }}\n*Enlace:* ${{ github.event.pull_request.html_url }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Logs:* ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Slack message with build result
         if: success() || failure()
         uses: slackapi/slack-github-action@v1.24.0
-        env:
-          PULL_REQUEST_JOB_STATUS: ${{ job.status }}
-          PULL_REQUEST_JOB_STATUS_COLOR: ${{ job.status == 'success' && "#FFA500" || job.status == 'failure' && "#FFA500" || "#FFA500" }}
         with:
           channel-id: C07G7NCBVQW
-          payload-file-path: .github/slack/ci_slack_message.json
+          payload: |
+            {
+              "channel": "C07G7NCBVQW",
+              "text": "📢 Resultado de la construcción.",
+              "attachments": [
+                {
+                  "color": "${{ job.status == 'success' && '#36a64f' || job.status == 'failure' && '#ff0000' || '#FFA500' }}",
+                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
