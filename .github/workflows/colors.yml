@@ -28,11 +28,11 @@ jobs:
           payload: |
             {
               "channel": "C07G7NCBVQW",
-              "text": "📢 Atención: Se ha iniciado una nueva construcción.",
+              "text": "📢 Atención: Nueva notificación",
               "attachments": [
                 {
                   "color": "#FFA500",
-                  "text": "Detalles del *Pull Request*:\n*Título:* ${{ github.event.issue.title }}\n*Autor:* ${{ github.event.sender.login }}\n*Body:* ${{ github.event.issue.body }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Sender:* ${{ github.event.sender.login }}"
+                  "text": "Detalles del *Pull Request o Issue*:\n*Título:* ${{ github.event.issue.title }}\n*Autor:* ${{ github.event.sender.login }}\n*Body:* ${{ github.event.issue.body }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Sender:* ${{ github.event.sender.login }}"
                 }
               ]
             }
