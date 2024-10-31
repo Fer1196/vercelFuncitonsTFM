@@ -1,0 +1,31 @@
+name: Notificación a Slack al cerrar un Pull Request
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  notify_slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar notificación a Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS=""
+
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            STATUS="merged"
+          else
+            STATUS="declined"
+          fi
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "text": "Tu pull request (#${{ github.event.pull_request.number }}) ha sido \"$STATUS\".",
+            "channel": "#general"
+          }
+          EOF
+          )
+
+          curl -X POST -H 'Content-type: application/json' --data "$PAYLOAD" $SLACK_WEBHOOK_URL

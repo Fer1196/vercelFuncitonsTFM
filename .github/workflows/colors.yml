@@ -1,0 +1,59 @@
+name: my_workflow
+
+on:
+  push:
+    branches:
+      - UAT  # O cualquier rama específica que desees monitorear
+  pull_request:
+    branches:
+      - UAT
+    types: [opened, synchronize]
+  issues:
+    types: [opened, edited]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Slack message on build start
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: C07G7NCBVQW
+          payload: |
+            {
+              "channel": "C07G7NCBVQW",
+              "text": "📢 Atención: Nueva notificación",
+              "attachments": [
+                {
+                  "color": "#FFA500",
+                  "text": "Detalles del *Pull Request o Issue*:\n*Título:* ${{ github.event.issue.title }}\n*Autor:* ${{ github.event.sender.login }}\n*Body:* ${{ github.event.issue.body }}\n*Commit:* ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}\n*Sender:* ${{ github.event.sender.login }}"
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Slack message with build result
+        if: success() || failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: C07G7NCBVQW
+          payload: |
+            {
+              "channel": "C07G7NCBVQW",
+              "text": "📢 Resultado de la construcción.",
+              "attachments": [
+                {
+                  "color": "${{ job.status == 'success' && '#36a64f' || job.status == 'failure' && '#ff0000' || '#FFA500' }}",
+                  "text": "Estado del trabajo: ${{ job.status }}\nEnlace a los logs: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
