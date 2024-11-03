@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.ts",
+      "src": "src/index.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "src": "/api/create", "dest": "/api/create.ts" },
-    { "src": "/api/read", "dest": "/api/read.ts" },
-    { "src": "/api/update", "dest": "/api/update.ts" },
-    { "src": "/api/delete", "dest": "/api/delete.ts" }
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
   ]
 }
